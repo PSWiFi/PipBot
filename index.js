@@ -24,6 +24,9 @@ client.on('message', message => {
 	const command = toId(args.shift());
 	try {
 		switch (command) {
+			// Make sure to run a checkPerms on everything!
+			// Also would recommend using checkPerms('chatvoice') for broadcasting stuff
+			// since it uses the displayed rank (higher of room and global rank)
 			case 'pip': {
 				checkPerms('roommod');
 				message.reply('pip');
@@ -90,7 +93,7 @@ function getCheckPerms (message) {
 		const rankRegex = /^(?:room|chat|global)/;
 		const level = rankString.match(rankRegex)?.toString();
 		if (!level) throw new Error('Rank must start with room/chat');
-		// 'room' checks for roomauth, 'chat' uses the rank shown in chat
+		// 'room' checks for roomauth, 'chat' uses the rank shown in chat, 'global' uses the global rank
 		const rank = rankString.replace(rankRegex, '');
 		const requiredRank = getRank(rank);
 		const room = config.mainRoom; // You can use message.target.roomid if you want to use this elsewhere
