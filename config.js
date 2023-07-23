@@ -1,4 +1,5 @@
 module.exports = {
 	prefix: '~',
-	rooms: ['botdevelopment']
+	rooms: ['botdevelopment'],
+	mainRoom: 'botdevelopment'
 };
