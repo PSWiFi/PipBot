@@ -12,15 +12,15 @@ const pointsSchema = new mongoose.Schema({
 const Points = mongoose.model('points', pointsSchema);
 
 async function getPoints (user, room) {
-	return Points.findOneById(`${toId(room)}-${toId(user)}`);
+	return Points.findOneById(`${toId(room)}-${toId(user)}`).lean();
 }
 
 async function addPoints (user, room, amt, type = 0) {
-	return Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { $inc: { [`points.${type}`]: amt } })
+	return Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { $inc: { [`points.${type}`]: amt } }).lean();
 }
 
 async function setPoints (user, room, amt, setTo = 0) {
-	return Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { points: Array.isArray(setTo) ? setTo : [setTo] });
+	return Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { points: Array.isArray(setTo) ? setTo : [setTo] }).lean();
 }
 
 async function deletePoints (user, room) {
