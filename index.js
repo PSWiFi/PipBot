@@ -39,7 +39,7 @@ client.on('message', async message => {
 				message.reply('lup');
 				break;
 			}
-			case 'addpoints': case 'addpoint': case 'addp': case 'add': {
+			case 'addwp': {
 				checkPerms('roomdriver');
 				// Remove the next line if you want to let staff use this in DMs
 				if (message.type !== 'chat') throw new ChatError('Hi I can only do this in a room!');
@@ -54,7 +54,7 @@ client.on('message', async message => {
 				message.reply(`${amt} point${Math.abs(amt) === 1 ? '' : 's'} awarded to ${users.join(', ')}.`);
 				break;
 			}
-			case 'points': case 'viewpoints': case 'viewpoint': case 'viewp': case 'atm': {
+			case 'wp': case 'viewwp': {
 				if (message.type === 'chat') checkPerms('chatvoice');
 				const user = args.length ? toId(args.join('')) : message.author.userid;
 				const { name, points } = await DB.getPoints(user);
