@@ -43,7 +43,7 @@ async function logPoints (room = config.mainRoom) {
 
 async function resetPoints (room = config.mainRoom, resetTo = [0]) {
 	return Promise.all(resetTo.map((val, i) => {
-		return Points.updateMany({ room: toId(room), `points.${i}`: { $gte: val } }, { `points.${i}`: val });
+		return Points.updateMany({ room: toId(room), [`points.${i}`]: { $gte: val } }, { [`points.${i}`]: val });
 	}));
 }
 
