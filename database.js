@@ -11,7 +11,7 @@ const pointsSchema = new mongoose.Schema({
 
 const Points = mongoose.model('points', pointsSchema);
 
-async function getPoints (user, room) {
+async function getPoints (user, room = config.mainRoom) {
 	return Points.findById(`${toId(room)}-${toId(user)}`).lean();
 }
 
@@ -33,15 +33,15 @@ async function setPoints (user, room, setTo = 0) {
 	return Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { points: Array.isArray(setTo) ? setTo : [setTo] }, { new: true }).lean();
 }
 
-async function deletePoints (user, room) {
+async function deletePoints (user, room = config.mainRoom) {
 	return Points.deleteOne({ _id: `${toId(room)}-${toId(user)}` });
 }
 
-async function logPoints (room) {
+async function logPoints (room = config.mainRoom) {
 	return Points.find({ room: toId(room) }).lean();
 }
 
-async function resetPoints (room, resetTo = 0) {
+async function resetPoints (room = config.mainRoom, resetTo = 0) {
 	return Points.updateMany({ room: toId(room) }, { points: Array.isArray(resetTo) ? resetTo : [resetTo] });
 }
 

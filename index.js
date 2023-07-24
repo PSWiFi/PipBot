@@ -54,6 +54,13 @@ client.on('message', async message => {
 				message.reply(`${amt} point${Math.abs(amt) === 1 ? '' : 's'} awarded to ${users.join(', ')}.`);
 				break;
 			}
+			case 'points': case 'viewpoints': case 'viewpoint': case 'viewp': case 'atm': {
+				if (message.type === 'chat') checkPerms('chatvoice');
+				const user = args.length ? toId(args.join('')) : message.author.userid;
+				const { name, points } = await DB.getPoints(user);
+				message.reply(`${name} has ${points[0]} point${Math.abs(points[0]) === 1 ? '' : 's'}.`);
+				break;
+			}
 			default: {
 				throw new ChatError('Hi I don\'t know that command sorry');
 			}
