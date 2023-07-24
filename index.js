@@ -12,7 +12,7 @@ const DB = require('./database.js');
 const client = new Client({ username, password, rooms: ['botdevelopment'], debug: true });
 client.connect();
 
-client.on('message', message => {
+client.on('message', async message => {
 	if (message.isIntro || message.author.name === client.status.username) return;
 	if (message.content === '%...%') console.log(message, message.author, message.target);
 	if (!message.content.startsWith(config.prefix)) {
@@ -27,6 +27,8 @@ client.on('message', message => {
 			// Make sure to run a checkPerms on everything!
 			// Also would recommend using checkPerms('chatvoice') for broadcasting stuff
 			// since it uses the displayed rank (higher of room and global rank)
+			// Also remember to add a break after every command
+			// Yes I could've used modular functions but I'm lazy okay
 			case 'pip': {
 				checkPerms('roommod');
 				message.reply('pip');
@@ -37,6 +39,24 @@ client.on('message', message => {
 				message.reply('lup');
 				break;
 			}
+			case 'addpoints': case 'addpoint': case 'addp': case 'add': {
+				checkPerms('roomdriver');
+				// Remove the next line if you want to let staff use this in DMs
+				if (message.type !== 'chat') throw new ChatError('Hi I can only do this in a room!');
+				const params = args.join(' ').split(',').map(param => param.trim());
+				const [amt, ...extra] = params.filter(param => /^-?\d+$/.test(param));
+				if (extra.length) throw new ChatError('Hi I need exactly one number for the amount please');
+				// You can also make this '1' or something instead!
+				if (!amt) throw new ChatError('Hi how many points do you want me to add');
+				const users = params.filter(param => /[a-z]/i.test(param));
+				await Promise.all(users.map(user => DB.addPoints(user, config.mainRoom, parseInt(amt))));
+				// await DB.bulkAddPoints(users, config.mainRoom, parseInt(amt));
+				message.reply(`${amt} point${Math.abs(amt) === 1 ? '' : 's'} awarded to ${users.join(', ')}.`);
+				break;
+			}
+			default: {
+				throw new ChatError('Hi I don\'t know that command sorry');
+			}
 		}
 	} catch (err) {
 		message.reply(err.message);
@@ -46,13 +66,6 @@ client.on('message', message => {
 
 
 // You shouldn't need to touch the stuff below this
-
-class ChatError extends Error {
-	constructor (args) {
-		super(args);
-		this.name = this.constructor.name;
-	}
-}
 
 function getCheckPerms (message) {
 	const rankMap = {

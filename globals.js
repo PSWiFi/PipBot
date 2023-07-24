@@ -4,3 +4,11 @@ global.toId = function toId (string) {
 
 const config = require('./config.js');
 global.config = config;
+
+class ChatError extends Error {
+	constructor (args) {
+		super(args);
+		this.name = this.constructor.name;
+	}
+}
+global.ChatError = ChatError;

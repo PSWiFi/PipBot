@@ -12,15 +12,25 @@ const pointsSchema = new mongoose.Schema({
 const Points = mongoose.model('points', pointsSchema);
 
 async function getPoints (user, room) {
-	return Points.findOneById(`${toId(room)}-${toId(user)}`).lean();
+	return Points.findById(`${toId(room)}-${toId(user)}`).lean();
 }
 
 async function addPoints (user, room, amt, type = 0) {
-	return Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { $inc: { [`points.${type}`]: amt } }).lean();
+	const res = await Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { $inc: { [`points.${type}`]: amt } }).lean();
+	if (!res) {
+		const pointsVal = Array.from({ length: type + 1 }, (_, i) => i === type ? amt : 0);
+		const pointsDoc = new Points({ _id: `${toId(room)}-${toId(user)}`, name: user, room: toId(room), points: pointsVal })
+		return pointsDoc.save();
+	}
 }
 
-async function setPoints (user, room, amt, setTo = 0) {
-	return Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { points: Array.isArray(setTo) ? setTo : [setTo] }).lean();
+async function bulkAddPoints (users, room, amt, type = 0) {
+	const ids = users.map(user => `${toId(room)}-${toId(user)}`);
+	return Points.updateMany({ _id: { $in: ids } }, { $inc: { [`points.${type}`]: amt } });
+}
+
+async function setPoints (user, room, setTo = 0) {
+	return Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { points: Array.isArray(setTo) ? setTo : [setTo] }, { new: true }).lean();
 }
 
 async function deletePoints (user, room) {
@@ -28,7 +38,7 @@ async function deletePoints (user, room) {
 }
 
 async function logPoints (room) {
-	return Points.find({ points: { $gte: 0 }, room: toId(room) }).lean();
+	return Points.find({ room: toId(room) }).lean();
 }
 
 async function resetPoints (room, resetTo = 0) {
@@ -38,6 +48,7 @@ async function resetPoints (room, resetTo = 0) {
 module.exports = {
 	getPoints,
 	addPoints,
+	bulkAddPoints,
 	setPoints,
 	deletePoints,
 	logPoints,
