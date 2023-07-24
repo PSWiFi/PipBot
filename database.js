@@ -41,8 +41,10 @@ async function logPoints (room = config.mainRoom) {
 	return Points.find({ room: toId(room) }).lean();
 }
 
-async function resetPoints (room = config.mainRoom, resetTo = 0) {
-	return Points.updateMany({ room: toId(room) }, { points: Array.isArray(resetTo) ? resetTo : [resetTo] });
+async function resetPoints (room = config.mainRoom, resetTo = [0]) {
+	return Promise.all(resetTo.map((val, i) => {
+		return Points.updateMany({ room: toId(room), `points.${i}`: { $gte: val } }, { `points.${i}`: val });
+	}));
 }
 
 module.exports = {

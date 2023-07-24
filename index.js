@@ -57,8 +57,12 @@ client.on('message', async message => {
 			case 'points': case 'viewpoints': case 'viewpoint': case 'viewp': case 'atm': {
 				if (message.type === 'chat') checkPerms('chatvoice');
 				const user = args.length ? toId(args.join('')) : message.author.userid;
-				const { name, points } = await DB.getPoints(user);
-				message.reply(`${name} has ${points[0]} point${Math.abs(points[0]) === 1 ? '' : 's'}.`);
+				try {
+					const { name, points } = await DB.getPoints(user);
+					message.reply(`${name} has ${points[0]} point${Math.abs(points[0]) === 1 ? '' : 's'}.`);
+				} catch (err) {
+					throw new ChatError(`That user doesn't have any points...`);
+				}
 				break;
 			}
 			default: {
