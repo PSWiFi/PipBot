@@ -15,10 +15,32 @@ async function getPoints (user, room = config.mainRoom) {
 	return Points.findById(`${toId(room)}-${toId(user)}`).lean();
 }
 
-async function addPoints (user, room, amt, type = 0) {
-	const res = await Points.findOneAndUpdate({ _id: `${toId(room)}-${toId(user)}` }, { $inc: { [`points.${type}`]: amt } }).lean();
-	if (!res) {
-		const pointsVal = Array.from({ length: type + 1 }, (_, i) => i === type ? amt : 0);
+async function addPoints (user, room, amt, type = 0, cap = 10_000) {
+	// const $add = [{
+	// 	$arrayElemAt: ['$points', type]
+	// }, amt];
+	// const res = await Points.aggregate([{ $match: { _id: `${toId(room)}-${toId(user)}` } }, { $addFields: {
+	// 	[`points.${type}`]: { $cond: {
+	// 		if: { $gt: [{ $add }, cap] },
+	// 		then: cap,
+	// 		else: { $add }
+	// 	} }
+	// } }]);
+	// if (!res.length) {
+	// 	const pointsVal = Array.from({ length: type + 1 }, (_, i) => i === type ? Math.min(cap, amt) : 0);
+	// 	const pointsDoc = new Points({ _id: `${toId(room)}-${toId(user)}`, name: user, room: toId(room), points: pointsVal })
+	// 	return pointsDoc.save();
+	// }
+
+	// Gah the good approach was tiring
+	const entry = await Points.findById(`${toId(room)}-${toId(user)}`);
+	if (entry) {
+		entry.points[type] ??= 0;
+		entry.points[type] += amt;
+		entry.points[type] = Math.min(entry.points[type], cap);
+		return entry.save();
+	} else {
+		const pointsVal = Array.from({ length: type + 1 }, (_, i) => i === type ? Math.min(cap, amt) : 0);
 		const pointsDoc = new Points({ _id: `${toId(room)}-${toId(user)}`, name: user, room: toId(room), points: pointsVal })
 		return pointsDoc.save();
 	}
@@ -47,6 +69,23 @@ async function resetPoints (room = config.mainRoom, resetTo = [0]) {
 	}));
 }
 
+
+
+const cacheSchema = new mongoose.Schema({
+	id: { type: String, unique: true, required: true },
+	value: String
+});
+const Cache = mongoose.model('cache', cacheSchema);
+
+async function setTourDetails (val) {
+	return Cache.findOneAndUpdate({ id: 'tourDetails' }, { $set: { value: val } }, { upsert: true, new: true });
+}
+async function getTourDetails () {
+	const res = await Cache.findOne({ id: 'tourDetails' });
+	return res || '';
+}
+
+
 module.exports = {
 	getPoints,
 	addPoints,
@@ -54,5 +93,8 @@ module.exports = {
 	setPoints,
 	deletePoints,
 	logPoints,
-	resetPoints
+	resetPoints,
+
+	setTourDetails,
+	getTourDetails
 };

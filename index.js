@@ -2,6 +2,7 @@ const { Client } = require('ps-client');
 const dotenv = require('dotenv');
 
 dotenv.config();
+const CACHE = {};
 const { BOT_USERNAME: username, BOT_PASSWORD: password } = process.env;
 const config = require('./config.js');
 
@@ -39,8 +40,10 @@ client.on('message', async message => {
 				message.reply('lup');
 				break;
 			}
-			case 'addwp': {
-				checkPerms('roomdriver');
+			// We're using both addwp and addhp as the same command; the line
+			// with useHelperPoints is what makes them slightly different
+			case 'addwp': case 'addhwp': {
+				checkPerms('chatvoice');
 				// Remove the next line if you want to let staff use this in DMs
 				if (message.type !== 'chat') throw new ChatError('Hi I can only do this in a room!');
 				const params = args.join(' ').split(',').map(param => param.trim());
@@ -49,7 +52,9 @@ client.on('message', async message => {
 				// You can also make this '1' or something instead!
 				if (!amt) throw new ChatError('Hi how many points do you want me to add');
 				const users = params.filter(param => /[a-z]/i.test(param));
-				await Promise.all(users.map(user => DB.addPoints(user, config.mainRoom, parseInt(amt))));
+				const useHelperPoints = command === 'addhwp';
+				await Promise.all(users.map(user => DB.addPoints(user, config.mainRoom, parseInt(amt), useHelperPoints ? 1 : 0, useHelperPoints ? 150 : 10_000)));
+				// TODO: Probably make this a Promise.allSettled and display results instead
 				// await DB.bulkAddPoints(users, config.mainRoom, parseInt(amt));
 				message.reply(`${amt} point${Math.abs(amt) === 1 ? '' : 's'} awarded to ${users.join(', ')}.`);
 				break;
@@ -58,10 +63,46 @@ client.on('message', async message => {
 				if (message.type === 'chat') checkPerms('chatvoice');
 				const user = args.length ? toId(args.join('')) : message.author.userid;
 				try {
-					const { name, points } = await DB.getPoints(user);
-					message.reply(`${name} has ${points[0]} point${Math.abs(points[0]) === 1 ? '' : 's'}.`);
+					const { name, points: [wp, hp = 0] } = await DB.getPoints(user);
+					message.reply(`${name} has ${wp + hp} point${Math.abs(wp + hp) === 1 ? '' : 's'}${hp ? ` - ${wp}WP and ${hp}HWP` : ''}.`);
 				} catch (err) {
 					throw new ChatError(`That user doesn't have any points...`);
+				}
+				break;
+			}
+			case 'reset': {
+				checkPerms('roomdriver'); // Maybe make this roommod? Perms are up to you
+				// Remove the next line if you want to let staff use this in DMs
+				if (message.type !== 'chat') throw new ChatError('Hi I can only do this in a room!');
+				message.reply('Are you sure you want to reset the leaderboard? Type \'confirm\' to confirm within the next 10 seconds.');
+				try {
+					await message.target.waitFor(msg => {
+						return msg.author.userid === message.author.userid && toId(msg.content) === 'confirm';
+					}, 10_000);
+					await DB.resetPoints(config.mainRoom, [15, 0]);
+					message.reply('Points have been reset!');
+				} catch {
+					message.reply(`Time expired.`);
+				}
+				break;
+			}
+			case 'monthly': {
+				if (message.type === 'pm') {
+					// Set the value of the monthly
+					checkPerms('roomowner');
+					const tourDetails = args.join(' ').trim();
+					if (!tourDetails) throw new ChatError('Umm what\'s the tour format though');
+					CACHE.tourDetails = tourDetails;
+					DB.setTourDetails(tourDetails);
+					message.reply(`Set monthly tour to: ${tourDetails}`);
+				} else if (message.type === 'chat') {
+					// Creating a monthly tour
+					checkPerms('roomvoice');
+					if (!CACHE.tourDetails) CACHE.tourDetails = await DB.getTourDetails();
+					message.reply(`/tour create ${CACHE.tourDetails}, elimination`);
+					message.reply('/tour autostart 5');
+					message.reply('/tour autodq 2');
+					message.reply('/tour scouting disallow');
 				}
 				break;
 			}
@@ -129,7 +170,6 @@ function getCheckPerms (message) {
 			level === 'global' ? message.author.group :
 			null);
 		if (actualRank >= requiredRank) return true;
-		console.log(actualRank, requiredRank, level, message.msgRank, room, message.parent.rooms);
 		if (throwErr) throw new ChatError('Insufficient permissions');
 		return false;
 	}
