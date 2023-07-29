@@ -1,5 +1,5 @@
 module.exports = {
 	prefix: '~',
-	rooms: ['botdevelopment'],
-	mainRoom: 'botdevelopment'
+	rooms: ['botdevelopment', 'wifi', 'wifistaff'],
+	mainRoom: 'wifi'
 };
