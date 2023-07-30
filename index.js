@@ -10,7 +10,7 @@ require('./globals.js');
 
 const DB = require('./database.js');
 
-const client = new Client({ username, password, rooms: ['botdevelopment'], debug: true });
+const client = new Client({ username, password, rooms: config.rooms, debug: true });
 client.connect();
 
 client.on('message', async message => {
