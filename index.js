@@ -30,17 +30,8 @@ client.on('message', async message => {
 			// since it uses the displayed rank (higher of room and global rank)
 			// Also remember to add a break after every command
 			// Yes I could've used modular functions but I'm lazy okay
-			case 'pip': {
-				checkPerms('roommod');
-				message.reply('pip');
-				break;
-			}
-			case 'lup': {
-				checkPerms('globalvoice');
-				message.reply('lup');
-				break;
-			}
-			// We're using both addwp and addhp as the same command; the line
+
+			// We're using both addwp and addhwp as the same command; the line
 			// with useHelperPoints is what makes them slightly different
 			case 'addwp': case 'addhwp': {
 				checkPerms('chatvoice');
@@ -110,6 +101,7 @@ client.on('message', async message => {
 				throw new ChatError('Hi I don\'t know that command sorry');
 			}
 		}
+		if (Math.random() < 0.1) message.reply('PIP!');
 	} catch (err) {
 		message.reply(err.message);
 		if (err.name !== 'ChatError') console.log(err, err.name);
