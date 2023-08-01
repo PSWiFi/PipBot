@@ -17,7 +17,7 @@ client.on('message', async message => {
 	if (message.isIntro || message.author.name === client.status.username) return;
 	if (message.content === '%...%') console.log(message, message.author, message.target);
 	if (!message.content.startsWith(config.prefix)) {
-		if (message.type === 'pm' && message.author.name) message.reply(`Hi, I'm ${username}! I'm a Bot for the WiFi room. For support, please contact a staff member.`);
+		if (message.type === 'pm' && message.author.name) message.reply(`Hi, I'm ${username}! I'm a Bot for the WiFi room - my prefix is \`\`]\`\`. For support, please contact a staff member.`);
 		return;
 	}
 	const checkPerms = getCheckPerms(message);
