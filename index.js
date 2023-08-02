@@ -22,7 +22,7 @@ client.on('message', async message => {
 	}
 	const checkPerms = getCheckPerms(message);
 	const args = message.content.substr(config.prefix.length).split(' ');
-	const command = toId(args.shift());
+	const command = args.shift().toLowerCase().trim();
 	try {
 		switch (command) {
 			// Make sure to run a checkPerms on everything!
