@@ -44,12 +44,12 @@ client.on('message', async message => {
 				if (!amt) throw new ChatError('Hi how many points do you want me to add');
 				const users = params.filter(param => /[a-z]/i.test(param));
 				const useHelperPoints = command.includes('hwp');
-				const remove = command.includes('remove');
-				if (remove) amt *= -1;
+				const remove = command.includes('remove') || amt < 0;
+				if (remove) amt = Math.abs(amt) * -1;
 				await Promise.all(users.map(user => DB.addPoints(user, config.mainRoom, parseInt(amt), useHelperPoints ? 1 : 0, useHelperPoints ? 150 : 10_000)));
 				// TODO: Probably make this a Promise.allSettled and display results instead
 				// await DB.bulkAddPoints(users, config.mainRoom, parseInt(amt));
-				message.reply(`${amt} point${Math.abs(amt) === 1 ? '' : 's'} ${remove ? 'removed from' : 'awarded to'} ${users.join(', ')}.`);
+				message.reply(`${Math.abs(amt)} point${Math.abs(amt) === 1 ? '' : 's'} ${remove ? 'removed from' : 'awarded to'} ${users.join(', ')}.`);
 				break;
 			}
 			case 'wp': case 'viewwp': {
