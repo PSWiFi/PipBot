@@ -34,6 +34,7 @@ async function addPoints (user, room, amt, type = 0, cap = 10_000) {
 
 	// Gah the good approach was tiring
 	const entry = await Points.findById(`${toId(room)}-${toId(user)}`);
+	console.log(entry);
 	if (entry) {
 		entry.points[type] ??= 0;
 		entry.points[type] += amt;
@@ -63,10 +64,14 @@ async function logPoints (room = config.mainRoom) {
 	return Points.find({ room: toId(room) }).lean();
 }
 
-async function resetPoints (room = config.mainRoom, resetTo = [0]) {
-	return Promise.all(resetTo.map((val, i) => {
-		return Points.updateMany({ room: toId(room), [`points.${i}`]: { $gte: val } }, { [`points.${i}`]: val });
-	}));
+async function resetPoints(room = config.mainRoom, resetTo = [15, 0]) {
+	const cursor = Points.find({ room: toId(room) }).cursor();
+	return cursor.eachAsync(async (entry) => {
+		const [oldWP, oldHWP] = entry.points;
+		const newWP = Math.max(0, Math.min(oldWP + (oldHWP || 0), resetTo[0]));
+		entry.points = [newWP, resetTo[1]];
+		await entry.save();
+	});
 }
 
 
