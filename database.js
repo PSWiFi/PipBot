@@ -34,7 +34,6 @@ async function addPoints (user, room, amt, type = 0, cap = 10_000) {
 
 	// Gah the good approach was tiring
 	const entry = await Points.findById(`${toId(room)}-${toId(user)}`);
-	console.log(entry);
 	if (entry) {
 		entry.points[type] ??= 0;
 		entry.points[type] += amt;
