@@ -33,7 +33,7 @@ client.on('message', async message => {
 
 			// We're using both addwp and addhwp as the same command; the line
 			// with useHelperPoints is what makes them slightly different
-			case 'addwp': case 'addhwp': {
+			case 'addwp': case 'addhwp': case 'removewp': case 'removehwp': {
 				checkPerms('chatvoice');
 				// Remove the next line if you want to let staff use this in DMs
 				if (message.type !== 'chat') throw new ChatError('Hi I can only do this in a room!');
@@ -43,7 +43,8 @@ client.on('message', async message => {
 				// You can also make this '1' or something instead!
 				if (!amt) throw new ChatError('Hi how many points do you want me to add');
 				const users = params.filter(param => /[a-z]/i.test(param));
-				const useHelperPoints = command === 'addhwp';
+				const useHelperPoints = command.includes('hwp');
+				if (command.includes('remove')) amt *= -1;
 				await Promise.all(users.map(user => DB.addPoints(user, config.mainRoom, parseInt(amt), useHelperPoints ? 1 : 0, useHelperPoints ? 150 : 10_000)));
 				// TODO: Probably make this a Promise.allSettled and display results instead
 				// await DB.bulkAddPoints(users, config.mainRoom, parseInt(amt));
