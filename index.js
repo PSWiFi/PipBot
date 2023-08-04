@@ -13,13 +13,19 @@ const DB = require('./database.js');
 const client = new Client({ username, password, rooms: config.rooms, debug: true });
 client.connect();
 
+const FORMATTING_CHARS = ['*', '_', '`', '~', '^', '\\'];
+
 client.on('message', async message => {
 	if (message.isIntro || message.author.name === client.status.username) return;
 	if (message.content === '%...%') console.log(message, message.author, message.target);
+	
 	if (!message.content.startsWith(config.prefix)) {
 		if (message.type === 'pm' && message.author.name) message.reply(`Hi, I'm ${username}! I'm a Bot for the WiFi room - my prefix is \`\`${config.prefix}\`\`. For support, please contact a staff member.`);
 		return;
 	}
+
+	if (FORMATTING_CHARS.includes(config.prefix) && message.content.startsWith(config.prefix.repeat(2))) return; // Don't try and interpret formatting as a command
+	
 	const checkPerms = getCheckPerms(message);
 	const args = message.content.substr(config.prefix.length).split(' ');
 	const command = args.shift().toLowerCase().trim();
