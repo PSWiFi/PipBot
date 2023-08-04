@@ -70,6 +70,7 @@ client.on('message', async message => {
 					await message.target.waitFor(msg => {
 						return msg.author.userid === message.author.userid && toId(msg.content) === 'confirm';
 					}, 10_000);
+					message.reply('Resetting points, please wait...');
 					await DB.resetPoints(config.mainRoom, [15, 0]);
 					message.reply('Points have been reset!');
 				} catch {
