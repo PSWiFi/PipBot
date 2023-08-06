@@ -67,7 +67,7 @@ client.on("message", async (message) => {
           .join(" ")
           .split(",")
           .map((param) => param.trim());
-        const [amt, ...extra] = params.filter((param) => /^-?\d+$/.test(param));
+        let [amt, ...extra] = params.filter((param) => /^-?\d+$/.test(param));
         if (extra.length)
           throw new ChatError(
             `Please provide only 1 number (received: ${extra + 1})`
