@@ -1,5 +1,5 @@
 module.exports = {
-  prefix: "^",
+  prefix: "~",
   rooms: ["botdevelopment", "wifi", "wifistaff"],
   mainRoom: "wifi",
 };
