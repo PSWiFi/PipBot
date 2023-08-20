@@ -162,6 +162,11 @@ client.on("message", async (message) => {
           message.reply("/tour scouting disallow");
         }
         break;
+      
+      case "say":
+        if (!config.developers.includes(message.author.userid)) checkPerms("roomowner");
+        message.reply(args.join(""));
+        break;
 
       default:
         throw new ChatError(DEFAULT_MESSAGE);
