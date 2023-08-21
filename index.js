@@ -167,6 +167,13 @@ client.on("message", async (message) => {
         if (!config.developers.includes(message.author.userid)) checkPerms("roomowner");
         message.reply(args.join(""));
         break;
+      
+      case "rejoin":
+      case "rj":
+        Client.send("|/j wifi");
+        Client.send("|/j wifistaff");
+        Client.send("|/j botdevelopment");
+        break;
 
       default:
         throw new ChatError(DEFAULT_MESSAGE);
