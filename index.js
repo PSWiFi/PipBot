@@ -165,14 +165,14 @@ client.on("message", async (message) => {
       
       case "say":
         if (!config.developers.includes(message.author.userid)) checkPerms("roomowner");
-        message.reply(args.join(""));
+        message.reply(args.join(" "));
         break;
       
       case "rejoin":
       case "rj":
-        Client.send("|/j wifi");
-        Client.send("|/j wifistaff");
-        Client.send("|/j botdevelopment");
+        client.send("|/j wifi");
+        client.send("|/j wifistaff");
+        client.send("|/j botdevelopment");
         break;
 
       default:
