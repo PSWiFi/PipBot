@@ -1,7 +1,6 @@
 # PipBot
 
-PipBot is a very adorable bot for the WiFi room.
-
+This is a bot used to manage event based operations in the Showdown! Wi-Fi room.
 
 ## Setup
 
