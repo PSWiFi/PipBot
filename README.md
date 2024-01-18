@@ -9,7 +9,7 @@ Node.js v16+ should be fine.
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/PartMan/PipBot.git PipBot
+git clone https://github.com/PSWiFi/PipBot.git PipBot
 cd PipBot
 ```
 
