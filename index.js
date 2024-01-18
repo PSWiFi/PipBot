@@ -178,9 +178,9 @@ client.on("message", async (message) => {
       
         case "rejoin":
         case "rj":
-          client.send("|/j wifi");
-          client.send("|/j wifistaff");
-          client.send("|/j botdevelopment");
+          for (const room of config.rooms) {
+            client.send("|/j " + room);
+          }
           break;
 
         default:
