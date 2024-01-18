@@ -25,7 +25,8 @@ const CANNOT_BE_USED_IN_PM = "This command can only be used in a room.";
 
 client.on("message", async (message) => {
   if (message.author?.name) {
-    if (message.isIntro || message.author?.name === client.status.username) return;
+    if (message.isIntro || message.author?.name === client.status.username)
+      return;
     if (message.content === "%...%")
       console.log(message, message.author, message.target);
 
@@ -40,8 +41,12 @@ client.on("message", async (message) => {
       message.content.startsWith(config.prefix.repeat(2))
     )
       return; // Don't try and interpret formatting as a command
-  
-    if (message.command === "/raw" && message.content?.includes("</span> sent you a friend request!")) return;
+
+    if (
+      message.command === "/raw" &&
+      message.content?.includes("</span> sent you a friend request!")
+    )
+      return;
 
     const checkPerms = getCheckPerms(message);
     const args = message.content.substr(config.prefix.length).split(" ");
@@ -96,7 +101,8 @@ client.on("message", async (message) => {
           // TODO: Probably make this a Promise.allSettled and display results instead
           // await DB.bulkAddPoints(users, config.mainRoom, parseInt(amt));
           message.reply(
-            `${Math.abs(amt)} point${Math.abs(amt) === 1 ? "" : "s"} ${remove ? "removed from" : "awarded to"
+            `${Math.abs(amt)} point${Math.abs(amt) === 1 ? "" : "s"} ${
+              remove ? "removed from" : "awarded to"
             } ${users.join(", ")}.`
           );
           break;
@@ -104,15 +110,18 @@ client.on("message", async (message) => {
         case "wp":
         case "viewwp":
           if (message.type === "chat") checkPerms("chatvoice");
-          const user = args.length ? toId(args.join("")) : message.author.userid;
+          const user = args.length
+            ? toId(args.join(""))
+            : message.author.userid;
           try {
             const {
               name,
               points: [wp, hp = 0],
             } = await DB.getPoints(user);
             message.reply(
-              `${name} has ${wp + hp} point${Math.abs(wp + hp) === 1 ? "" : "s"}${hp ? ` - ${wp}WP and ${hp}HWP` : ""
-              }.`
+              `${name} has ${wp + hp} point${
+                Math.abs(wp + hp) === 1 ? "" : "s"
+              }${hp ? ` - ${wp}WP and ${hp}HWP` : ""}.`
             );
           } catch (err) {
             throw new ChatError("That user doesn't have any points...");
@@ -156,23 +165,29 @@ client.on("message", async (message) => {
           } else if (message.type === "chat") {
             // Creating a monthly tour
             checkPerms("roomvoice");
-            if (!CACHE.tourDetails) CACHE.tourDetails = await DB.getTourDetails();
+            if (!CACHE.tourDetails)
+              CACHE.tourDetails = await DB.getTourDetails();
             message.reply(`/tour create ${CACHE.tourDetails}, elimination`);
             message.reply("/tour autostart 5");
             message.reply("/tour autodq 2");
             message.reply("/tour scouting disallow");
           }
           break;
-      
+
         case "say":
-          if (!config.developers.includes(message.author.userid)) checkPerms("roomowner");
+          if (!config.developers.includes(message.author.userid))
+            checkPerms("roomowner");
           message.reply(args.join(" "));
           break;
-        
+
         case "sayroom":
-          if (!config.developers.includes(message.author.userid)) throw new ChatError("You lack permission to use this command.");
+          if (!config.developers.includes(message.author.userid))
+            throw new ChatError("You lack permission to use this command.");
           let room = toId(args.shift());
-          if (!room || !args.length) throw new ChatError(`\`\`${config.prefix}sayroom room, message or command\`\``);
+          if (!room || !args.length)
+            throw new ChatError(
+              `\`\`${config.prefix}sayroom room, message or command\`\``
+            );
           client.send(`${room}|${args.join(" ").trim()}`);
           break;
       
