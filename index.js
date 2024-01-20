@@ -244,6 +244,13 @@ client.on("message", async (message) => {
   }
 });
 
+// Attempt to rejoin room upon leave
+client.on("leaveRoom", async (room) => {
+  if (config.rooms.includes(room)) {
+    client.send("|/j " + room);
+  }
+});
+
 // You shouldn't need to touch the stuff below this
 
 function getCheckPerms(message) {
