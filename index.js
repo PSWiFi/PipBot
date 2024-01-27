@@ -251,6 +251,15 @@ client.on("leaveRoom", async (room) => {
   }
 });
 
+// Unga bunga
+client.on("connect", async () => {
+  setInterval(() => {
+    for (const room of config.rooms) {
+      client.send("|/j " + room);
+    }
+  }, 15 * 1000);
+});
+
 // You shouldn't need to touch the stuff below this
 
 function getCheckPerms(message) {
