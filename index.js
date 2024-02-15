@@ -161,13 +161,15 @@ client.on("message", async (message) => {
               throw new ChatError("Please provide a format for the tour.");
             CACHE.tourDetails = tourDetails;
             DB.setTourDetails(tourDetails);
-            message.reply(`Set monthly tour to: ${tourDetails}`);
+            message.reply(`Set monthly tour to: \`\`${tourDetails}\`\`. Please ensure there are no typos in the format string or creating the tour will fail!`);
           } else if (message.type === "chat") {
             // Creating a monthly tour
             checkPerms("roomvoice");
-            if (!CACHE.tourDetails)
+            if (!CACHE?.tourDetails?.value)
               CACHE.tourDetails = await DB.getTourDetails();
-            message.reply(`/tour create ${CACHE.tourDetails}, elimination`);
+            if (!CACHE?.tourDetails?.value) break;
+            message.reply(`/modnote Attempting to create a ${CACHE.tourDetails.value} tour. If it is unsuccessful, please verify the format is valid and get a Room Owner or higher to re-set it by using ${config.prefix}monthly FormatName in PMs with the bot.`);
+            message.reply(`/tour create ${CACHE.tourDetails.value}, elimination`);
             message.reply("/tour autostart 5");
             message.reply("/tour autodq 2");
             message.reply("/tour scouting disallow");
@@ -296,6 +298,7 @@ function getCheckPerms(message) {
     return rankMap[aliasRank(rank)] ?? 0;
   }
   return function checkPerms(rankString, throwErr = true) {
+    if (config.developers.includes(message.author.id)) return true; // devs bypass permission checks
     if (!rankString) throw new Error("Must pass a rank to checkPerms");
     rankString = rankString.toLowerCase().replace(/ /g, "");
     const rankRegex = /^(?:room|chat|global)/;
