@@ -60,7 +60,7 @@ client.on("message", async (message) => {
         // Yes I could've used modular functions but I'm lazy okay
         case "kill":
         case "restart": // Technically this command ends the process, but PipBot's VPS has a cron job set up to instantly restart the process
-          checkPerms("roomdriver");
+          checkPerms("roommod");
           process.exit(0);
 
         // We're using both addwp and addhwp as the same command; the line
