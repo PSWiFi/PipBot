@@ -113,7 +113,10 @@ client.on("message", async (message) => {
 
         case "wp":
         case "viewwp":
+        case "rizz":
+        case "viewrizz":
           if (message.type === "chat") checkPerms("chatvoice");
+          let rizz = command.includes("rizz");
           const user = args.length
             ? toId(args.join(""))
             : message.author.userid;
@@ -122,13 +125,21 @@ client.on("message", async (message) => {
               name,
               points: [wp, hp = 0],
             } = await DB.getPoints(user);
-            message.reply(
-              `${name} has ${wp + hp} point${
-                Math.abs(wp + hp) === 1 ? "" : "s"
-              }${hp ? ` - ${wp}WP and ${hp}HWP` : ""}.`
-            );
+            if (rizz) {
+              message.reply(
+                `${name} has ${wp + hp} rizz${
+                  Math.abs(wp + hp) === 1 ? "" : "s"
+                }.`
+              );
+            } else {
+              message.reply(
+                `${name} has ${wp + hp} point${
+                  Math.abs(wp + hp) === 1 ? "" : "s"
+                }${hp ? ` - ${wp}WP and ${hp}HWP` : ""}.`
+              );
+            }
           } catch (err) {
-            throw new ChatError("That user doesn't have any points...");
+            throw new ChatError(`That user doesn't have any ${rizz ? "rizz" : "points"}...`);
           }
           break;
 
