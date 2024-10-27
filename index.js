@@ -134,6 +134,7 @@ client.on("message", async (message) => {
 
         case "reset":
         case "resetwp":
+        case "fanumtax":
           checkPerms("roomdriver"); // Maybe make this roommod? Perms are up to you
           // Remove the next line if you want to let staff use this in DMs
           if (message.type !== "chat")
