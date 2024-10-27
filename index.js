@@ -68,13 +68,16 @@ client.on("message", async (message) => {
         case "addwp":
         case "addhwp":
         case "addpp":
+        case "addrizz":
         case "removepp":
         case "removewp":
         case "removehwp":
+        case "removerizz":
           checkPerms("chatvoice");
           // Remove the next line if you want to let staff use this in DMs
           if (message.type !== "chat")
             throw new ChatError(CANNOT_BE_USED_IN_PM);
+          let rizz = command.includes("rizz");
           const params = args
             .join(" ")
             .split(",")
@@ -105,7 +108,7 @@ client.on("message", async (message) => {
           // TODO: Probably make this a Promise.allSettled and display results instead
           // await DB.bulkAddPoints(users, config.mainRoom, parseInt(amt));
           message.reply(
-            `${Math.abs(amt)} point${Math.abs(amt) === 1 ? "" : "s"} ${
+            `${Math.abs(amt)} ${rizz ? "rizz" ? "point"}${Math.abs(amt) === 1 && !rizz ? "" : "s"} ${
               remove ? "removed from" : "awarded to"
             } ${users.join(", ")}.`
           );
@@ -127,9 +130,7 @@ client.on("message", async (message) => {
             } = await DB.getPoints(user);
             if (rizz) {
               message.reply(
-                `${name} has ${wp + hp} rizz${
-                  Math.abs(wp + hp) === 1 ? "" : "s"
-                }.`
+                `${name} has ${wp + hp} rizz.`
               );
             } else {
               message.reply(
