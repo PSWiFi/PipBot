@@ -119,7 +119,7 @@ client.on("message", async (message) => {
         case "rizz":
         case "viewrizz":
           if (message.type === "chat") checkPerms("chatvoice");
-          let rizz = command.includes("rizz");
+          let rz = command.includes("rizz");
           const user = args.length
             ? toId(args.join(""))
             : message.author.userid;
@@ -128,7 +128,7 @@ client.on("message", async (message) => {
               name,
               points: [wp, hp = 0],
             } = await DB.getPoints(user);
-            if (rizz) {
+            if (rz) {
               message.reply(
                 `${name} has ${wp + hp} rizz.`
               );
