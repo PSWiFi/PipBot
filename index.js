@@ -108,7 +108,7 @@ client.on("message", async (message) => {
           // TODO: Probably make this a Promise.allSettled and display results instead
           // await DB.bulkAddPoints(users, config.mainRoom, parseInt(amt));
           message.reply(
-            `${Math.abs(amt)} ${rizz ? "rizz" ? "point"}${Math.abs(amt) === 1 && !rizz ? "" : "s"} ${
+            `${Math.abs(amt)} ${rizz ? "rizz" : "point"}${Math.abs(amt) === 1 && !rizz ? "" : "s"} ${
               remove ? "removed from" : "awarded to"
             } ${users.join(", ")}.`
           );
