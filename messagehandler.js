@@ -50,7 +50,7 @@ async function handleMessage(message, client, DB) {
           process.exit(0);
 
         case "hangman":
-          checkPerms("roomvoice");
+          checkPerms("chatvoice");
           if (message.type !== "chat")
             throw new ChatError(CANNOT_BE_USED_IN_PM);
           message.reply("/hangman random");

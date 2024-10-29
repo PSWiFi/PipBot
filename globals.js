@@ -5,6 +5,9 @@ global.toId = function toId(string) {
 const config = require("./config.js");
 global.config = config;
 
+const CACHE = {};
+global.CACHE = CACHE;
+
 class ChatError extends Error {
   constructor(args) {
     super(args);
