@@ -63,6 +63,13 @@ client.on("message", async (message) => {
           checkPerms("roommod");
           process.exit(0);
 
+        case "hangman":
+          checkPerms("roomvoice");
+          if (message.type !== "chat")
+            throw new ChatError(CANNOT_BE_USED_IN_PM);
+          message.reply("/hangman random");
+          break;
+
         // We're using both addwp and addhwp as the same command; the line
         // with useHelperPoints is what makes them slightly different
         case "addwp":
@@ -87,7 +94,7 @@ client.on("message", async (message) => {
             throw new ChatError(
               `Please provide only 1 number (received: ${extra + 1})`
             );
-          // You can also make this '1' or something instead!aa
+          // You can also make this '1' or something instead
           if (!amt || parseInt(amt) === 0)
             throw new ChatError("Please provide the number of points to add.");
           const users = params.filter((param) => /[a-z]/i.test(param));
