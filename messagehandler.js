@@ -132,7 +132,7 @@ async function handleMessage(message, client, DB) {
             }
           } catch (err) {
             throw new ChatError(
-              `That user doesn't have any ${rizz ? "rizz" : "points"}...`
+              `That user doesn't have any ${rz ? "rizz" : "points"}...`
             );
           }
           break;
