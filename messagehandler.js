@@ -165,7 +165,7 @@ async function handleMessage(message, client, DB) {
         case "monthly":
           if (message.type === "pm") {
             // Set the value of the monthly
-            checkPerms("roomowner");
+            checkPerms("roommod");
             const tourDetails = args.join(" ").trim();
             if (!tourDetails)
               throw new ChatError("Please provide a format for the tour.");
