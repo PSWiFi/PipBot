@@ -283,7 +283,7 @@ function getCheckPerms(message) {
     "*": 3,
     "%": 2,
     "@": 3,
-    "&": 4,
+    "~": 4,
     "#": 5,
 
     "⛵": 1,
@@ -296,7 +296,7 @@ function getCheckPerms(message) {
     bot: "*",
     owner: "#",
     ro: "#",
-    admin: "&",
+    admin: "~",
   };
   function aliasRank(rank) {
     if (aliases[rank]) return aliases[rank];
