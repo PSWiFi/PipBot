@@ -9,7 +9,33 @@ const pointsSchema = new mongoose.Schema({
   points: { type: [Number], required: true, default: [0] },
 });
 
+const linkUserSchema = new mongoose.Schema({
+  _id: { type: String, required: true },
+  code: { type: String, required: true },
+  verified: { type: Boolean, required: true, default: false },
+  discord: { type: String, required: true },
+});
+
 const Points = mongoose.model("points", pointsSchema);
+const linkUser = mongoose.model("linkUser", linkUserSchema);
+
+async function getLinkUser(user) {
+  return await linkUser.findById(user);
+}
+
+async function verifyLinkUser(user, code) {
+  const entry = await linkUser.findById(user);
+  if (entry) {
+    if (entry.verified === true) return 3;
+    if (entry.code === code) {
+      entry.verified = true;
+      await entry.save();
+      return 2;
+    }
+    return 1;
+  }
+  return 0;
+}
 
 async function getPoints(user, room = config.mainRoom) {
   return Points.findById(`${toId(room)}-${toId(user)}`).lean();
@@ -116,4 +142,7 @@ module.exports = {
 
   setTourDetails,
   getTourDetails,
+
+  getLinkUser,
+  verifyLinkUser,
 };
